@@ -16,6 +16,11 @@ rec {
 	];
 
 	services = {
+		redis.servers.default = {
+			enable = true;
+			port = 6379;
+			appendOnly = true;
+		};
 		matrix-synapse = {
 			enable = true;
 			package = import ../../../../synapse-workers/package.nix {inherit pkgs;};
