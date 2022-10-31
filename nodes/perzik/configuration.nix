@@ -15,8 +15,11 @@ in {
 	}) [
 		../../common/networking/hetzner.nix
 
+		./services/glitch-soc
+
+		./services/backups.nix
 		./services/nginx.nix
-		./services/synapse.nix
+		# ./services/synapse.nix
 		./services/postgres.nix
 	]);
 

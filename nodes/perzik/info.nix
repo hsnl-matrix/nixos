@@ -23,11 +23,16 @@
 		synapse-events = 15005;
 		synapse-typing = 15006;
 		synapse-appservice = 15007;
-
 		synapse-fed_out1 = 15101;
 		synapse-fed_out2 = 15102;
 		synapse-fed_out3 = 15103;
 		synapse-fed_out4 = 15104;
+
+		mastodon-web = 5500;
+		mastodon-streaming = 5501;
+		mastodon-redis = 5502;
+
+		dex = 4500;
 	};
 
 	# sshPublicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKZ4RskorIZzBBhOZdNkQQuss7KPbF9eyejFuQfBywyt root@aura";

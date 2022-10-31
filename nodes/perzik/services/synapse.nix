@@ -6,9 +6,12 @@
 }:
 {config, pkgs, lib, ...}:
 
-rec {
+let
+	workers-commit = "b39021de735c2a89aa45c9461085c86804098c7f";
+	synapse-workers-nix = fetchTarball "https://git.pixie.town/f0x/synapse-workers-nix/archive/${workers-commit}.tar.gz";
+in rec {
 	imports = [
-    ../../../../synapse-workers/module.nix
+		"${synapse-workers-nix}/module.nix"
 	];
 
 	disabledModules = [
@@ -23,9 +26,51 @@ rec {
 		};
 		matrix-synapse = {
 			enable = true;
-			package = import ../../../../synapse-workers/package.nix {inherit pkgs;};
+			package = import "${synapse-workers-nix}/package.nix" {inherit pkgs;};
       withJemalloc = true;
       dataDir = "/persist/synapse";
+
+      settings = {
+			  server_name = "matrix-test.hsnl.im";
+			  enable_registration = false;
+			  registration_shared_secret = semiSecrets.synapse.registrationSharedSecret;
+			  enable_metrics = true;
+        report_state = false;
+        presence.enabled = true;
+        auto_join_rooms = [
+					"#hsnl:matrix-test.hsnl.im"
+				];
+
+			  listeners = [
+				  {
+					  port = ports.synapse-main;
+					  bind_addresses = ["localhost"];
+					  type = "http";
+					  tls = false;
+					  x_forwarded = true;
+					  resources = [
+						  {
+							  names = [ "client" "federation" ];
+							  compress = false;
+						  }
+					  ];
+				  }
+				  {
+					  port = ports.synapse-metrics;
+					  bind_addresses = ["localhost"];
+					  type = "metrics";
+					  tls = false;
+					  x_forwarded = true;
+					  resources = [
+				 		  {
+				 			  names = [ ];
+				 			  compress = false;
+				 		  }
+					  ];
+				  }
+			  ];
+			  max_upload_size = "50M";
+      };
 
 			workers = {
 				enable = true;
@@ -172,48 +217,6 @@ rec {
 					};
 				};
 			};
-
-      settings = {
-			  server_name = "matrix-test.hsnl.im";
-			  enable_registration = false;
-			  registration_shared_secret = semiSecrets.synapse.registrationSharedSecret;
-			  enable_metrics = true;
-        report_state = false;
-        presence.enabled = true;
-        auto_join_rooms = [
-					"#hsnl:matrix-test.hsnl.im"
-				];
-
-			  listeners = [
-				  {
-					  port = ports.synapse-main;
-					  bind_addresses = ["localhost"];
-					  type = "http";
-					  tls = false;
-					  x_forwarded = true;
-					  resources = [
-						  {
-							  names = [ "client" "federation" ];
-							  compress = false;
-						  }
-					  ];
-				  }
-				  {
-					  port = ports.synapse-metrics;
-					  bind_addresses = ["localhost"];
-					  type = "metrics";
-					  tls = false;
-					  x_forwarded = true;
-					  resources = [
-				 		  {
-				 			  names = [ ];
-				 			  compress = false;
-				 		  }
-					  ];
-				  }
-			  ];
-			  max_upload_size = "50M";
-      };
 		};
 	};
 

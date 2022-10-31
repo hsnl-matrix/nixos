@@ -10,4 +10,23 @@
 			mkdir /backup
 		'';
 	};
+
+	fileSystems."/var/lib/acme" = {
+		device = "/persist/ssl";
+		options = [ "bind" ];
+	};
+
+	services.openssh.hostKeys = [
+		{
+			path = "/persist/ssh/ed25519_key";
+			type = "ed25519";
+		}
+		{
+			path = "/persist/ssh/rsa_key";
+			type = "rsa";
+			bits = 4096;
+		}
+	];
+
+	users.extraUsers.root.home = lib.mkOverride 10 "/persist/root";
 }
