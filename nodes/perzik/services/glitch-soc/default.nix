@@ -13,7 +13,7 @@ in rec {
   ];
 
 	services = {
-		elasticsearch.enable = true;
+		elasticsearch.enable = false; # too much memory
 
 		mastodon = {
 			enable = true;
@@ -26,9 +26,9 @@ in rec {
 
 			configureNginx = false;
 
-			elasticsearch = {
-				host = "127.0.0.1";
-			};
+			# elasticsearch = {
+			# 	host = "127.0.0.1";
+			# };
 
 			redis = {
 				createLocally = false;
@@ -83,7 +83,7 @@ in rec {
 
 					root = "${services.mastodon.package}/public/";
 
-					locations."/system/".alias = "/var/lib/mastodon/public-system/";
+					locations."/system/".alias = "/persist/mastodon/public-system/";
 
 					locations."/" = {
 						tryFiles = "$uri @proxy";
