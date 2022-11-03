@@ -13,7 +13,7 @@ in rec {
   ];
 
 	services = {
-		elasticsearch.enable = false; # too much memory
+		elasticsearch.enable = true;
 
 		mastodon = {
 			enable = true;
@@ -26,9 +26,9 @@ in rec {
 
 			configureNginx = false;
 
-			# elasticsearch = {
-			# 	host = "127.0.0.1";
-			# };
+			elasticsearch = {
+				host = "127.0.0.1";
+			};
 
 			redis = {
 				createLocally = false;
