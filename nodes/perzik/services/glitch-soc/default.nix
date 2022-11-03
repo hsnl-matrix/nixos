@@ -46,9 +46,9 @@ in rec {
 
 			smtp = {
 				createLocally = false;
-				fromAddress = "hsnl@pixie.town";
+				fromAddress = "no-reply@hsnl.social";
 				host = "smtp.migadu.com";
-				user = "hsnl@pixie.town";
+				user = "no-reply@hsnl.social";
 				authenticate = true;
 				port = 465;
 				passwordFile = "/persist/secrets/migadu";
