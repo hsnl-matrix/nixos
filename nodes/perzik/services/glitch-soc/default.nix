@@ -13,7 +13,10 @@ in rec {
   ];
 
 	services = {
-		elasticsearch.enable = true;
+		elasticsearch = {
+			enable = true;
+			package = pkgs.elasticsearch7;
+		};
 
 		mastodon = {
 			enable = true;
