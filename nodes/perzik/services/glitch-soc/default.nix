@@ -50,13 +50,16 @@ in rec {
 			smtp = {
 				createLocally = false;
 				fromAddress = "no-reply@hsnl.social";
-				# host = "smtp.migadu.com";
-				host = "127.0.0.1";
+				host = "smtp.migadu.com";
+				# host = "127.0.0.1";
 				port = 465;
-				# user = "no-reply@hsnl.social";
-				# authenticate = true;
-				# passwordFile = "/persist/secrets/migadu";
+				user = "no-reply@hsnl.social";
+				authenticate = true;
+				passwordFile = "/persist/secrets/migadu";
 			};
+
+			webProcesses = 8;
+			sidekiqThreads = 42;
 
 			extraConfig = {
 				AUTHORIZED_FETCH = "true";
@@ -64,7 +67,7 @@ in rec {
 				SINGLE_USER_MODE = "false";
 				DEFAULT_LOCALE = "en";
 
-				# SMTP_SSL = "true";
+				SMTP_SSL = "true";
 			};
 		};
 
