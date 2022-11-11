@@ -113,6 +113,12 @@ in rec {
 		};
 	};
 
+	systemd.services.mastodon-init-dirs.serviceConfig.StateDirectoryMode = lib.mkOverride 10 "0755";
+	systemd.services.mastodon-init-db.serviceConfig.StateDirectoryMode = lib.mkOverride 10 "0755";
+	systemd.services.mastodon-streaming.serviceConfig.StateDirectoryMode = lib.mkOverride 10 "0755";
+	systemd.services.mastodon-web.serviceConfig.StateDirectoryMode = lib.mkOverride 10 "0755";
+	systemd.services.mastodon-sidekiq.serviceConfig.StateDirectoryMode = lib.mkOverride 10 "0755";
+
 	users = {
 		users.glitch-soc = {
 			isNormalUser = lib.mkOverride 10 true;
