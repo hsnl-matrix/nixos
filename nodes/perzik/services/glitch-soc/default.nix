@@ -101,7 +101,7 @@ in rec {
 						'';
 					};
 
-					locations."/api/v1/streaming/" = {
+					locations."~ ^/api/v1/streaming" = {
 						proxyPass = "http://127.0.0.1:${toString(ports.mastodon-streaming)}";
 						proxyWebsockets = true;
 						extraConfig = ''
