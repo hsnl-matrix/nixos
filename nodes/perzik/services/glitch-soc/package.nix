@@ -1,20 +1,14 @@
 with import <nixpkgs> {};
 let 
 	pname = "glitch-soc";
-	version = "3f1532";
-	srcOverride = pkgs.fetchFromGitHub {
-		owner = "glitch-soc";
-		repo = "mastodon";
-		rev = "3f15326a05a926e9f001800a48ac2addbd3aa833";
-		sha256 = "1m1agij9i2byiml02yq0h9w6f64jvy2y2ayjm880pg5xm638nqmk";
-	};
+	version = import ./version.nix;
 	dependenciesDir = ./.;
 in stdenv.mkDerivation rec {
   inherit pname version;
 
   # Using overrideAttrs on src does not build the gems and modules with the overridden src.
   # Putting the callPackage up in the arguments list also does not work.
-  src = if srcOverride != null then srcOverride else callPackage ./source.nix {};
+  src = callPackage ./source.nix {};
 
   yarnOfflineCache = fetchYarnDeps {
     yarnLock = "${src}/yarn.lock";
