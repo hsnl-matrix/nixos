@@ -58,6 +58,9 @@ in rec {
 				passwordFile = "/persist/secrets/migadu";
 			};
 
+			webProcesses = 8;
+			sidekiqThreads = 42;
+
 			extraConfig = {
 				AUTHORIZED_FETCH = "true";
 				BIND = "127.0.0.1";
@@ -98,7 +101,7 @@ in rec {
 						'';
 					};
 
-					locations."/api/v1/streaming/" = {
+					locations."~ ^/api/v1/streaming" = {
 						proxyPass = "http://127.0.0.1:${toString(ports.mastodon-streaming)}";
 						proxyWebsockets = true;
 						extraConfig = ''
@@ -109,6 +112,12 @@ in rec {
 			};
 		};
 	};
+
+	systemd.services.mastodon-init-dirs.serviceConfig.StateDirectoryMode = lib.mkOverride 10 "755";
+	systemd.services.mastodon-init-db.serviceConfig.StateDirectoryMode = lib.mkOverride 10 "755";
+	systemd.services.mastodon-streaming.serviceConfig.StateDirectoryMode = lib.mkOverride 10 "755";
+	systemd.services.mastodon-web.serviceConfig.StateDirectoryMode = lib.mkOverride 10 "755";
+	systemd.services.mastodon-sidekiq.serviceConfig.StateDirectoryMode = lib.mkOverride 10 "755";
 
 	users = {
 		users.glitch-soc = {
