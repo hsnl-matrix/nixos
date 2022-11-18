@@ -85,6 +85,8 @@ in rec {
 			 		enableACME = true;
 					forceSSL = true;
 
+					extraConfig = "client_max_body_size 40m;";
+
 					root = "${services.mastodon.package}/public/";
 
 					locations."/system/".alias = "/persist/mastodon/public-system/";
