@@ -3,6 +3,7 @@ let
 	pname = "glitch-soc";
 	version = import ./version.nix;
 	dependenciesDir = ./.;
+  fetchYarnDeps2 = (callPackage ./prefetch-yarn-deps/fetchYarnDeps.nix {}).fetchYarnDeps;
 in stdenv.mkDerivation rec {
   inherit pname version;
 
@@ -10,9 +11,9 @@ in stdenv.mkDerivation rec {
   # Putting the callPackage up in the arguments list also does not work.
   src = callPackage ./source.nix {};
 
-  yarnOfflineCache = fetchYarnDeps {
+  yarnOfflineCache = fetchYarnDeps2 {
     yarnLock = "${src}/yarn.lock";
-    sha256 = "sha256:1a7n2dqqw59ycr6f0naxbnkd2hp7fsgcg1x8w37hkhh69b1f10sq";
+    sha256 = "sha256-bSpBJBOIRsSwQioT4Ha5jPV0mEPmlUv5HZ/tV5oLenk=";
   };
 
   mastodon-gems = bundlerEnv {
@@ -47,8 +48,8 @@ in stdenv.mkDerivation rec {
     buildPhase = ''
       export HOME=$PWD
       fixup_yarn_lock ~/yarn.lock
-      yarn config --offline set yarn-offline-mirror ${yarnOfflineCache}
-      yarn install --offline --frozen-lockfile --ignore-engines --ignore-scripts --no-progress
+      yarn config --offline set yarn-offline-mirror ${yarnOfflineCache} --verbose
+      yarn install --offline --frozen-lockfile --ignore-engines --ignore-scripts --verbose
       patchShebangs ~/bin
       patchShebangs ~/node_modules
       # skip running yarn install

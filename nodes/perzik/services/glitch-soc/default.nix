@@ -5,9 +5,8 @@
 	...
 }:
 {config, pkgs, lib, ...}:
-let
-	package = import ./package.nix;
-in rec {
+
+rec {
 	nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
     "elasticsearch"
   ];
@@ -20,7 +19,7 @@ in rec {
 
 		mastodon = {
 			enable = true;
-			inherit package;
+			package = import ./package/package.nix;
 
 			webPort = ports.mastodon-web;
 			streamingPort = ports.mastodon-streaming;
