@@ -10,8 +10,8 @@
 	services.borgbackup.jobs.copia = {
 		paths = "/backup";
 		readWritePaths = ["/backup"];
-		preHook = "${import ../../../common/utility.nix}/bin/backups.js perzik";
-		repo = "hsnl-perzik-backup@copia.pixie.town:.";
+		preHook = "${import ../../../common/utility.nix}/bin/backups.js aubergine";
+		repo = "hsnl-aubergine-backup@copia.pixie.town:.";
 		encryption = {
 			mode = "repokey-blake2";
 			passCommand = "cat /persist/secrets/borg";

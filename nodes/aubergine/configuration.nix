@@ -15,12 +15,12 @@ in {
 	}) [
 		../../common/networking/procolix.nix
 
-		# ./services/glitch-soc
+		./services/glitch-soc
 
-		# ./services/backups.nix
-		# ./services/nginx.nix
-		# # ./services/synapse.nix
-		# ./services/postgres.nix
+		./services/backups.nix
+		./services/nginx.nix
+		# ./services/synapse.nix
+		./services/postgres.nix
 	]);
 
 	boot = {

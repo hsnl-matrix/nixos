@@ -11,18 +11,6 @@
 		enable = true;
 
 		virtualHosts = {
-			"hsnl.social" = {
-			 	enableACME = true;
-				forceSSL = true;
-
-			 	locations."/" = {
-					proxyPass = "https://aubergine.hsnl.social/";
-					proxyWebsockets = true;
-					extraConfig = ''
-						proxy_set_header Host $host;
-					'';
-				};
-			};
 			"matrix-test.hsnl.im" = {
 			 	enableACME = true;
 				forceSSL = true;

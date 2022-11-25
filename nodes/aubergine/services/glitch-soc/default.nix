@@ -88,7 +88,7 @@ rec {
 
 					root = "${services.mastodon.package}/public/";
 
-					locations."/system/".alias = "/persist/mastodon/public-system/";
+					locations."/system/".alias = "/persist/mastodon-public/";
 
 					locations."/" = {
 						tryFiles = "$uri @proxy";
