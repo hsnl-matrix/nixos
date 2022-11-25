@@ -114,11 +114,18 @@ rec {
 		};
 	};
 
-	systemd.services.mastodon-init-dirs.serviceConfig.StateDirectoryMode = lib.mkOverride 10 "755";
-	systemd.services.mastodon-init-db.serviceConfig.StateDirectoryMode = lib.mkOverride 10 "755";
-	systemd.services.mastodon-streaming.serviceConfig.StateDirectoryMode = lib.mkOverride 10 "755";
-	systemd.services.mastodon-web.serviceConfig.StateDirectoryMode = lib.mkOverride 10 "755";
-	systemd.services.mastodon-sidekiq.serviceConfig.StateDirectoryMode = lib.mkOverride 10 "755";
+	systemd.services = let
+		serviceOverride = {
+			StateDirectoryMode = lib.mkOverride 10 "755";
+			ReadWritePaths = ["/persist/mastodon-public"];
+		};
+	in {
+		mastodon-init-dirs.serviceConfig = serviceOverride;
+		mastodon-init-db.serviceConfig = serviceOverride;
+		mastodon-streaming.serviceConfig = serviceOverride;
+		mastodon-web.serviceConfig = serviceOverride;
+		mastodon-sidekiq.serviceConfig = serviceOverride;
+	};
 
 	users = {
 		users.glitch-soc = {

@@ -21,7 +21,7 @@
 		};
 	};
 
-	environment.systemPackages = with pkgs; [ vim dfc ncdu ];
+	environment.systemPackages = with pkgs; [ vim dfc ncdu htop nethogs ];
 
 	services.openssh.enable = true;
 	users.extraUsers.root.openssh.authorizedKeys.keys = [
