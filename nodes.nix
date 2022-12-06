@@ -3,7 +3,7 @@ let
 in {
 	"aubergine" = {config, pkgs, ...}: {
 		imports = [
-      ./common/all.nix
+			./common/all.nix
 			nodes/aubergine/configuration.nix
 		];
 
@@ -15,7 +15,7 @@ in {
 
 	"perzik" = {config, pkgs, ...}: {
 		imports = [
-      ./common/all.nix
+			./common/all.nix
 			nodes/perzik/configuration.nix
 		];
 
