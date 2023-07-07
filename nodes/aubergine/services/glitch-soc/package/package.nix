@@ -13,7 +13,7 @@ in stdenv.mkDerivation rec {
 
   yarnOfflineCache = fetchYarnDeps2 {
     yarnLock = "${src}/yarn.lock";
-    sha256 = "sha256-bSpBJBOIRsSwQioT4Ha5jPV0mEPmlUv5HZ/tV5oLenk=";
+    sha256 = "sha256-8fUJ1RBQZ16R3IpA/JEcn+PO04ApQ9TkHuYKycvV8BY=";
   };
 
   mastodon-gems = bundlerEnv {
@@ -40,13 +40,16 @@ in stdenv.mkDerivation rec {
     pname = "${pname}-modules";
     inherit src version;
 
-    nativeBuildInputs = [ fixup_yarn_lock nodejs-slim yarn mastodon-gems mastodon-gems.wrappedRuby ];
+    nativeBuildInputs = [ fixup_yarn_lock nodejs-slim yarn mastodon-gems mastodon-gems.wrappedRuby brotli ];
 
     RAILS_ENV = "production";
     NODE_ENV = "production";
 
     buildPhase = ''
       export HOME=$PWD
+      # This option is needed for openssl-3 compatibility
+      # Otherwise we encounter this upstream issue: https://github.com/mastodon/mastodon/issues/17924
+      export NODE_OPTIONS=--openssl-legacy-provider
       fixup_yarn_lock ~/yarn.lock
       yarn config --offline set yarn-offline-mirror ${yarnOfflineCache} --verbose
       yarn install --offline --frozen-lockfile --ignore-engines --ignore-scripts --verbose
@@ -58,6 +61,14 @@ in stdenv.mkDerivation rec {
         rails assets:precompile
       yarn cache clean --offline
       rm -rf ~/node_modules/.cache
+      # Create missing static gzip and brotli files
+      gzip --best --keep ~/public/assets/500.html
+      gzip --best --keep ~/public/packs/report.html
+      find ~/public/assets -maxdepth 1 -type f -name '.*.json' \
+        -exec gzip --best --keep --force {} ';'
+      brotli --best --keep ~/public/packs/report.html
+      find ~/public/assets -type f -regextype posix-extended -iregex '.*\.(css|js|json|html)' \
+        -exec brotli --best --keep {} ';'
     '';
 
     installPhase = ''

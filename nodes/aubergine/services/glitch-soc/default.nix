@@ -41,6 +41,8 @@ rec {
 				createLocally = false;
 				user = "glitch-soc";
 				name = "glitch-soc";
+				host = "/var/run/postgresql";
+				passwordFile = "/dev/null";
 			};
 
 			user = "glitch-soc";
@@ -124,7 +126,7 @@ rec {
 		mastodon-init-db.serviceConfig = serviceOverride;
 		mastodon-streaming.serviceConfig = serviceOverride;
 		mastodon-web.serviceConfig = serviceOverride;
-		mastodon-sidekiq.serviceConfig = serviceOverride;
+		mastodon-sidekiq-all.serviceConfig = serviceOverride;
 	};
 
 	users = {
