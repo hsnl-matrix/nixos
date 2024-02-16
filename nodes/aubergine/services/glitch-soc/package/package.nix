@@ -3,7 +3,7 @@ let
 	pname = "glitch-soc";
 	version = import ./version.nix;
 	dependenciesDir = ./.;
-  fetchYarnDeps2 = (callPackage ./prefetch-yarn-deps/fetchYarnDeps.nix {}).fetchYarnDeps;
+  # fetchYarnDeps2 = (callPackage ./prefetch-yarn-deps/fetchYarnDeps.nix {}).fetchYarnDeps;
 in stdenv.mkDerivation rec {
   inherit pname version;
 

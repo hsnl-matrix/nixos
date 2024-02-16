@@ -23,7 +23,7 @@
 		synapse-fed_out4 = 15104;
 
 		mastodon-web = 5500;
-		mastodon-streaming = 5501;
+		mastodon-streaming = 4000;
 		mastodon-redis = 5502;
 
 		dex = 4500;

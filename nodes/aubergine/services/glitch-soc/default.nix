@@ -19,10 +19,26 @@ rec {
 
 		mastodon = {
 			enable = true;
-			package = import ./package/package.nix;
+			# package = pkgs.mastodon;
+			# package = import ./package/package.nix;
+			package = pkgs.mastodon.override {
+				pname = "glitch-soc";
+				version = "v4.5.2";
+				srcOverride = pkgs.callPackage ./package/source.nix {};
+				yarnHash = "sha256-qoLesubmSvRsXhKwMEWHHXcpcqRszqcdZgHQqnTpNPE=";
+				gemset = ./package/gemset.nix;
+			};
+			# package = pkgs.mastodon.override {
+			# 	pname = "glitch-soc";
+			# 	version = "v4.5.2";
+			# 	srcOverride = pkgs.callPackage ./package/source.nix {};
+			# 	yarnHash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+			# 	gemset = ./package/gemset.nix;
+			# };
 
 			webPort = ports.mastodon-web;
-			streamingPort = ports.mastodon-streaming;
+			# streamingPort = ports.mastodon-streaming;
+			streamingProcesses = 3;
 			enableUnixSocket = false;
 			localDomain = "hsnl.social";
 
@@ -104,15 +120,27 @@ rec {
 						'';
 					};
 
-					locations."~ ^/api/v1/streaming" = {
-						proxyPass = "http://127.0.0.1:${toString(ports.mastodon-streaming)}";
-						proxyWebsockets = true;
-						extraConfig = ''
-							proxy_set_header X-Forwarded-Proto https;
-						'';
+					locations."/api/v1/streaming" = {
+						proxyPass = "http://mastodon-streaming";
+          	proxyWebsockets = true;
+						# proxyPass = "http://127.0.0.1:${toString(ports.mastodon-streaming)}";
+						# proxyWebsockets = true;
+						# extraConfig = ''
+						# 	proxy_set_header X-Forwarded-Proto https;
+						# '';
 					};
 				};
 			};
+			upstreams.mastodon-streaming = {
+        extraConfig = ''
+          least_conn;
+        '';
+        servers = builtins.listToAttrs
+          (map (i: {
+            name = "unix:/run/mastodon-streaming/streaming-${toString i}.socket";
+            value = { };
+          }) (lib.range 1 services.mastodon.streamingProcesses));
+      };
 		};
 	};
 
@@ -124,7 +152,7 @@ rec {
 	in {
 		mastodon-init-dirs.serviceConfig = serviceOverride;
 		mastodon-init-db.serviceConfig = serviceOverride;
-		mastodon-streaming.serviceConfig = serviceOverride;
+		# mastodon-streaming.serviceConfig = serviceOverride;
 		mastodon-web.serviceConfig = serviceOverride;
 		mastodon-sidekiq-all.serviceConfig = serviceOverride;
 	};
