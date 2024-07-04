@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 set -e
 
-URL=https://github.com/glitch-soc/mastodon.git
+#URL=https://github.com/glitch-soc/mastodon.git
+URL=https://github.com/hsnl-matrix/glitch-soc.git
 
 POSITIONAL=()
 while [[ $# -gt 0 ]]; do

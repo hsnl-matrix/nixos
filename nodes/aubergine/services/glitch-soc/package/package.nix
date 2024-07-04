@@ -1,9 +1,10 @@
-with import <nixpkgs> {};
+{pkgs, ...}:
+with pkgs;
 let 
 	pname = "glitch-soc";
 	version = import ./version.nix;
 	dependenciesDir = ./.;
-  # fetchYarnDeps2 = (callPackage ./prefetch-yarn-deps/fetchYarnDeps.nix {}).fetchYarnDeps;
+  semiSecrets = import ../../../../../semi-secrets.nix;
 in stdenv.mkDerivation rec {
   inherit pname version;
 
@@ -11,15 +12,10 @@ in stdenv.mkDerivation rec {
   # Putting the callPackage up in the arguments list also does not work.
   src = callPackage ./source.nix {};
 
-  yarnOfflineCache = fetchYarnDeps2 {
-    yarnLock = "${src}/yarn.lock";
-    sha256 = "sha256-a4mHuyzjsw9ATtd/v31qB+c2isKx4aM6zSm+yaeSmv8=";
-  };
-
-  mastodon-gems = bundlerEnv {
+  mastodonGems = bundlerEnv {
     name = "${pname}-gems-${version}";
     inherit version;
-    ruby = ruby_3_0;
+    ruby = ruby_3_3;
     gemdir = src;
     gemset = dependenciesDir + "/gemset.nix";
     # This fix (copied from https://github.com/NixOS/nixpkgs/pull/76765) replaces the gem
@@ -36,31 +32,46 @@ in stdenv.mkDerivation rec {
     '';
   };
 
-  mastodon-modules = stdenv.mkDerivation {
+  mastodonModules = stdenv.mkDerivation ({
     pname = "${pname}-modules";
     inherit src version;
 
-    nativeBuildInputs = [ fixup_yarn_lock nodejs-slim yarn mastodon-gems mastodon-gems.wrappedRuby brotli ];
+    # use the fixed yarn berry offline cache thingy
+    yarnOfflineCache = callPackage ./yarn.nix {
+      inherit src;
+      hash = "sha256-U/0A1lIgUjkDjHgxr7x4+XBN4Ndpf2AEC6nenpqv90k=";
+    };
+
+    nativeBuildInputs = [ nodejs-slim yarn-berry mastodonGems mastodonGems.wrappedRuby brotli ];
 
     RAILS_ENV = "production";
     NODE_ENV = "production";
 
     buildPhase = ''
+      runHook preBuild
+
       export HOME=$PWD
       # This option is needed for openssl-3 compatibility
       # Otherwise we encounter this upstream issue: https://github.com/mastodon/mastodon/issues/17924
       export NODE_OPTIONS=--openssl-legacy-provider
-      fixup_yarn_lock ~/yarn.lock
-      yarn config --offline set yarn-offline-mirror ${yarnOfflineCache} --verbose
-      yarn install --offline --frozen-lockfile --ignore-engines --ignore-scripts --verbose
+
+      export YARN_ENABLE_TELEMETRY=0
+      mkdir -p ~/.yarn/berry
+      ln -sf $yarnOfflineCache ~/.yarn/berry/cache
+
+      yarn install --immutable --immutable-cache
+
       patchShebangs ~/bin
       patchShebangs ~/node_modules
+
       # skip running yarn install
       rm -rf ~/bin/yarn
+
       OTP_SECRET=precompile_placeholder SECRET_KEY_BASE=precompile_placeholder \
         rails assets:precompile
-      yarn cache clean --offline
+      yarn cache clean
       rm -rf ~/node_modules/.cache
+
       # Create missing static gzip and brotli files
       gzip --best --keep ~/public/assets/500.html
       gzip --best --keep ~/public/packs/report.html
@@ -69,28 +80,34 @@ in stdenv.mkDerivation rec {
       brotli --best --keep ~/public/packs/report.html
       find ~/public/assets -type f -regextype posix-extended -iregex '.*\.(css|js|json|html)' \
         -exec brotli --best --keep {} ';'
+
+      runHook postBuild
     '';
 
     installPhase = ''
+      runHook preInstall
+
       mkdir -p $out/public
       cp -r node_modules $out/node_modules
       cp -r public/assets $out/public
       cp -r public/packs $out/public
-    '';
-  };
 
-  propagatedBuildInputs = [ imagemagick ffmpeg file mastodon-gems.wrappedRuby ];
-  buildInputs = [ mastodon-gems nodejs-slim ];
+      runHook postInstall
+    '';
+  }  // semiSecrets.mastodon.active_record_encryption);
+
+  propagatedBuildInputs = [ imagemagick ffmpeg file mastodonGems.wrappedRuby ];
+  buildInputs = [ mastodonGems nodejs-slim ];
 
   buildPhase = ''
-    ln -s ${mastodon-modules}/node_modules node_modules
-    ln -s ${mastodon-modules}/public/assets public/assets
-    ln -s ${mastodon-modules}/public/packs public/packs
+    ln -s ${mastodonModules}/node_modules node_modules
+    ln -s ${mastodonModules}/public/assets public/assets
+    ln -s ${mastodonModules}/public/packs public/packs
     patchShebangs bin/
-    for b in $(ls ${mastodon-gems}/bin/)
+    for b in $(ls ${mastodonGems}/bin/)
     do
       if [ ! -f bin/$b ]; then
-        ln -s ${mastodon-gems}/bin/$b bin/$b
+        ln -s ${mastodonGems}/bin/$b bin/$b
       fi
     done
     rm -rf log

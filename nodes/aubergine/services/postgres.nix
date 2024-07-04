@@ -24,9 +24,7 @@ in {
 		ensureUsers = (let 
 			userWithPermissions = user: {
 				name = user;
-				ensurePermissions = {
-					"DATABASE \"${user}\"" = "ALL PRIVILEGES";
-				};
+				ensureDBOwnership = true;
 			};
 		in (map userWithPermissions usersWithDatabases));
 

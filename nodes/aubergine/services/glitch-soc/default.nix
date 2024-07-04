@@ -2,6 +2,7 @@
 	self,
 	common,
 	ports,
+	semiSecrets,
 	...
 }:
 {config, pkgs, lib, ...}:
@@ -20,14 +21,14 @@ rec {
 		mastodon = {
 			enable = true;
 			# package = pkgs.mastodon;
-			# package = import ./package/package.nix;
-			package = pkgs.mastodon.override {
-				pname = "glitch-soc";
-				version = "v4.5.2";
-				srcOverride = pkgs.callPackage ./package/source.nix {};
-				yarnHash = "sha256-qoLesubmSvRsXhKwMEWHHXcpcqRszqcdZgHQqnTpNPE=";
-				gemset = ./package/gemset.nix;
-			};
+			package = pkgs.callPackage ./package/package.nix {};
+			# package = pkgs.mastodon.override {
+			# 	pname = "glitch-soc";
+			# 	version = "v4.5.7";
+			# 	srcOverride = pkgs.callPackage ./package/source.nix {};
+			# 	yarnHash = "sha256-qoLesubmSvRsXhKwMEWHHXcpcqRszqcdZgHQqnTpNPE=";
+			# 	gemset = ./package/gemset.nix;
+			# };
 			# package = pkgs.mastodon.override {
 			# 	pname = "glitch-soc";
 			# 	version = "v4.5.2";
@@ -85,7 +86,7 @@ rec {
 				DEFAULT_LOCALE = "en";
 
 				SMTP_SSL = "true";
-			};
+			} // semiSecrets.mastodon.active_record_encryption;
 		};
 
 		redis.servers.mastodon = {
