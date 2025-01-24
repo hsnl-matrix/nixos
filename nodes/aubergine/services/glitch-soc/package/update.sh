@@ -1,8 +1,9 @@
-#!/usr/bin/env bash
+#! /usr/bin/env nix-shell
+#! nix-shell -i bash -p jq bundix
 set -e
 
-#URL=https://github.com/glitch-soc/mastodon.git
-URL=https://github.com/hsnl-matrix/glitch-soc.git
+URL=https://github.com/glitch-soc/mastodon.git
+#URL=https://github.com/hsnl-matrix/glitch-soc.git
 
 POSITIONAL=()
 while [[ $# -gt 0 ]]; do

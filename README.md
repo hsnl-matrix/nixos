@@ -1,9 +1,9 @@
-# HSNL Matrix Setup
-NixOS hosts deployed with [morph](https://github.com/DBCDK/morph);
-`morph deploy --on perzik nodes.nix switch`
+# hsnl.social system configuration
+NixOS hosts deployed with [colmena](https://colmena.cli.rs/);
+`colmena apply --on aubergine`
 
 Secrets are encrypted in-repo with [git-crypt](https://github.com/AGWA/git-crypt)
 
 ## Servers
-- perzik
-Currently the only server, runs matrix-synapse with a worker configuration
+- aubergine
+Currently the only server, runs the [glitch-soc](https://github.com/glitch-soc/mastodon) fork of Mastodon.

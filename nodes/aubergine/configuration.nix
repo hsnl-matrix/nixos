@@ -1,46 +1,61 @@
-{ config, pkgs, lib, ... }:
+{ pkgs, ... }:
+{
+  imports = [
+    ./hardware-configuration.nix
+    ../../presets/network/procolix.nix
+    ../../presets/network/firewall.nix
 
-let
-	self = import ./info.nix;
-	semiSecrets = import ../../semi-secrets.nix;
-in {
-	imports = [
-		./hardware-configuration.nix
-		../../common/erase-your-darlings.nix
-	] ++ (map (path: (import path) {
-		inherit self;
-		inherit semiSecrets;
-		common = import ../../common;
-		ports = self.ports;
-	}) [
-		../../common/networking/procolix.nix
+    ./services/backups.nix
+    ./services/glitch-soc
+  ];
 
-		./services/glitch-soc
+  boot = {
+    loader.grub = {
+      device = "/dev/xvda";
+      enable = true;
+    };
 
-		./services/backups.nix
-		./services/nginx.nix
-		# ./services/synapse.nix
-		./services/postgres.nix
-	]);
+    zfs.devNodes = "/dev/disk/by-partuuid";
+  };
 
-	boot = {
-		zfs.devNodes = "/dev/disk/by-partuuid";
-		kernelPackages = config.boot.zfs.package.latestCompatibleLinuxPackages;
-		loader.grub = {
-			device = "/dev/xvda";
-			enable = true;
-		};
-	};
+  presets = {
+    erase-your-darlings = {
+      enable = true;
+      rootPool = "pool/volatile";
+    };
 
-	networking.firewall.allowedTCPPorts = [ 22 80 443 ];
+    postgres = {
+      package = pkgs.postgresql_14;
+      databases = [ "glitch-soc" ];
+    };
+  };
 
-	services.xe-guest-utilities.enable = true;
+  networking.firewall.allowedTCPPorts = [ 22 80 443 ];
 
-	# This value determines the NixOS release from which the default
-	# settings for stateful data, like file locations and database versions
-	# on your system were taken. It‘s perfectly fine and recommended to leave
-	# this value at the release version of the first install of this system.
-	# Before changing this value read the documentation for this option
-	# (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-	system.stateVersion = "22.05"; # Did you read the comment?
+  services.postgresql.settings = {
+    "shared_preload_libraries" = "pg_stat_statements";
+    "pg_stat_statements.track" = "all";
+
+    # pgtune
+    "max_connections" = "200";
+    "shared_buffers" = "2GB";
+    "effective_cache_size" = "6GB";
+    "maintenance_work_mem" = "512MB";
+    "checkpoint_completion_target" = "0.9";
+    "wal_buffers" = "16MB";
+    "default_statistics_target" = "100";
+    "random_page_cost" = "1.1";
+    "effective_io_concurrency" = "200";
+    "work_mem" = "5242kB";
+    "min_wal_size" = "1GB";
+    "max_wal_size" = "4GB";
+    "max_worker_processes" = "4";
+    "max_parallel_workers_per_gather" = "2";
+    "max_parallel_workers" = "4";
+    "max_parallel_maintenance_workers" = "2";
+  };
+
+  services.xe-guest-utilities.enable = true;
+
+  system.stateVersion = "22.05";
 }
