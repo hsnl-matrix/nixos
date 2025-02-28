@@ -2,8 +2,8 @@
 { fetchgit, applyPatches }: let
   src = fetchgit {
     url = "https://github.com/glitch-soc/mastodon.git";
-    rev = "v4.3.3";
-    sha256 = "0v9ppxz0vhxzcv2cqa3pjcf5933pwcfwi5dbarpccnchglzc2li2";
+    rev = "v4.3.4";
+    sha256 = "1v598nhicj9qfcd1439ajca1lspi6fz4g6py1zhcf27a58nbh967";
   };
 in applyPatches {
   inherit src;
