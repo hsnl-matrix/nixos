@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-VERSION="nixos-${1:-24.11}"
+VERSION="nixos-${1:-25.05}"
 REPO="https://github.com/NixOS/nixpkgs"
 
 DATE=$(date +%Y-%m-%d_%H-%M-%S)
