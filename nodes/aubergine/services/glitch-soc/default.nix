@@ -13,14 +13,31 @@ rec {
 
     mastodon = {
       enable = true;
+      package = pkgs.callPackage ./package { };
       # package = pkgs.callPackage ./package/package.nix { };
-      package = pkgs.mastodon.override {
-        pname = "glitch-soc";
-        version = "v4.3.3";
-        srcOverride = pkgs.callPackage ./package/source.nix { };
-        yarnHash = "sha256-yXG6QZr8l/VEmNNn013vG9AJyLZloP0LdhCen0sJR/w=";
-        gemset = ./package/gemset.nix;
-      };
+      # package = (pkgs.mastodon.override {
+      #   yarnHash = "sha256-IC4d/skIHEzJPuKlq4rMAqV+ydqquA6toq4WWCfuDxo=";
+      # }).overrideAttrs
+      #   (final: prev: rec {
+      #     pname = "glitch-soc";
+      #     version = "v4.4.1";
+      #     src = pkgs.callPackage ./package/source.nix { };
+      #     gemset = ./package/gemset.nix;
+
+      #     mastodonGems = pkgs.bundlerEnv
+      #       {
+      #         name = "${pname}-gems-${version}";
+      #         inherit version gemset;
+      #         ruby = pkgs.ruby;
+      #         gemdir = src;
+
+      #         gemConfig = pkgs.defaultGemConfig // {
+      #           hiredis-client = attrs: {
+      #             buildInputs = [ pkgs.openssl ];
+      #           };
+      #         };
+      #       };
+      #   });
 
       localDomain = "hsnl.social";
       webPort = _info.ports.mastodon-web;
@@ -135,7 +152,7 @@ rec {
     let
       serviceOverride = {
         StateDirectoryMode = lib.mkOverride 10 "755";
-        ReadWritePaths = [ "/persist/mastodon-public" ];
+        ReadWritePaths = [ "/persist/mastodon-public" "/persist/mastodon" ];
       };
     in
     {
