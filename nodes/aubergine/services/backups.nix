@@ -44,7 +44,7 @@ in
     paths = [ "/backup/duplo" "/backup/postgres" ];
     readWritePaths = [ "/backup/duplo" ];
     exclude = [
-      "/backup/duplo/persist/postgres" # backed up as postgresqlBackup export instead
+      "/backup/duplo/pool_safe_persist/postgres" # backed up as postgresqlBackup export instead
     ];
     encryption = {
       mode = "repokey-blake2";
