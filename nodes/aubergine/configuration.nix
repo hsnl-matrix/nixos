@@ -11,11 +11,11 @@
 
   boot = {
     loader.grub = {
-      device = "/dev/xvda";
+      device = "/dev/sda";
       enable = true;
     };
 
-    zfs.devNodes = "/dev/disk/by-partuuid";
+    zfs.devNodes = "/dev/disk/by-id";
   };
 
   presets = {
@@ -55,7 +55,7 @@
     "max_parallel_maintenance_workers" = "2";
   };
 
-  services.xe-guest-utilities.enable = true;
+  services.qemuGuest.enable = true;
 
   system.stateVersion = "22.05";
 }

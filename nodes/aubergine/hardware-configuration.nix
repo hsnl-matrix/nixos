@@ -4,30 +4,37 @@
 { config, lib, pkgs, modulesPath, ... }:
 
 {
-  imports = [ ];
+  imports =
+    [
+      (modulesPath + "/profiles/qemu-guest.nix")
+    ];
 
-  boot.initrd.availableKernelModules = [ "ata_piix" "uhci_hcd" "sr_mod" "xen_blkfront" ];
+  boot.initrd.availableKernelModules = [ "ata_piix" "uhci_hcd" "virtio_pci" "virtio_scsi" "sd_mod" "sr_mod" ];
   boot.initrd.kernelModules = [ ];
   boot.kernelModules = [ ];
   boot.extraModulePackages = [ ];
 
   fileSystems."/" =
-    { device = "pool/volatile/root";
+    {
+      device = "pool/volatile/root";
       fsType = "zfs";
     };
 
   fileSystems."/nix" =
-    { device = "pool/volatile/nix";
+    {
+      device = "pool/volatile/nix";
       fsType = "zfs";
     };
 
   fileSystems."/persist" =
-    { device = "pool/safe/persist";
+    {
+      device = "pool/safe/persist";
       fsType = "zfs";
     };
 
   fileSystems."/boot" =
-    { device = "/dev/disk/by-uuid/E531-73DF";
+    {
+      device = "/dev/disk/by-uuid/E531-73DF";
       fsType = "vfat";
     };
 
