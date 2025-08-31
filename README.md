@@ -1,4 +1,6 @@
-# hsnl.social system configuration
+# Archived: Repository moved to https://codeberg.org/hsnl-social/nixos
+
+## hsnl.social system configuration
 NixOS hosts deployed with [colmena](https://colmena.cli.rs/);
 `colmena apply --on aubergine`
 
