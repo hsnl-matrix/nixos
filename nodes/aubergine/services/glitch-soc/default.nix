@@ -85,8 +85,14 @@ rec {
         BIND = "127.0.0.1";
         SINGLE_USER_MODE = "false";
         DEFAULT_LOCALE = "en";
-
         SMTP_SSL = "true";
+
+        MAX_TOOT_CHARS = "4096";
+        MAX_BIO_CHARS = "2048";
+        MAX_PINNED_TOOTS = "8";
+        MAX_POLL_OPTIONS = "16";
+        MAX_POLL_OPTION_CHARS = "512";
+        MAX_MEDIA_DESC_CHARS = "4096";
       };
 
       extraEnvFiles = [
